@@ -70,9 +70,6 @@ const dbGetData = (id, collection, store = "./data/") => {
 
 }
 
-let r = dbInsert({
-    nombre: "Agustin",
-    edad: 28
-}, "usuarios")
+let r = dbGetData("b313a8e691ac02753fcd9ae4136ef0cc", "usuarios")
 
 console.log(r)

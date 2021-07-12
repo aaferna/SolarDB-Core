@@ -34,8 +34,8 @@ Usando la consulta anterior obtenemos
 
 ```json
     {
-    "id": "c6a7f55fbf97e0de9478c6f4fd7e6c2b",
-    "directory": "./data/usuarios/c6a7f55fbf97e0de9478c6f4fd7e6c2b.json"
+        "id": "c6a7f55fbf97e0de9478c6f4fd7e6c2b",
+        "directory": "./data/usuarios/c6a7f55fbf97e0de9478c6f4fd7e6c2b.json"
     }
 ```
 
@@ -53,6 +53,13 @@ Respondera un Array con objetos segun corresponda, puede ser el indice del Store
     let r = dbGetIndex("usuarios")
 ```
 
+Usando la consulta anterior obtenemos
+
+```js
+    [ 'b313a8e691ac02753fcd9ae4136ef0cc' ]
+```
+
+
 ### Obtener Colecciones de un Store especifico
 
 ```js
@@ -63,6 +70,12 @@ Respondera un Array con objetos segun corresponda, puede ser el indice del Store
     let r = dbGetIndex()
 ```
 
+Usando la consulta anterior obtenemos
+
+```js
+    [ 'usuarios' ]
+```
+
 # Obtener Datos de un Indice
 
 Debe especificar el Indice que quiere obtener, Coleccion y Store. El Store, si no se indica, se tomara el predeterminado
@@ -71,4 +84,11 @@ Debe especificar el Indice que quiere obtener, Coleccion y Store. El Store, si n
     let r = dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios", "./data/")
     // or
     let r = dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios")
+```
+
+```json
+    {
+        "nombre":"Agustin",
+        "edad":27
+    }
 ```

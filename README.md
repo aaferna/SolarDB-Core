@@ -17,7 +17,7 @@
 ```
 
 Usando la consulta anterior obtenemos 
-: ./data/Metronica
+`./data/Metronica`
 
 # Inserto datos en DB
 

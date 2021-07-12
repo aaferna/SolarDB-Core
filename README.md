@@ -17,6 +17,7 @@
 ```
 
 Usando la consulta anterior obtenemos 
+
 `./data/Metronica`
 
 # Inserto datos en DB
@@ -27,7 +28,15 @@ Usando la consulta anterior obtenemos
                 edad: 28
             }, "usuarios")
 
-    console.log(r)
+```
+
+Usando la consulta anterior obtenemos 
+
+```json
+    {
+    id: 'c6a7f55fbf97e0de9478c6f4fd7e6c2b',
+    directory: './data/usuarios/c6a7f55fbf97e0de9478c6f4fd7e6c2b.json'
+    }
 ```
 
 # Obtener Indices

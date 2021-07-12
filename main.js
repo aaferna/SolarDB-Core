@@ -70,6 +70,9 @@ const dbGetData = (id, collection, store = "./data/") => {
 
 }
 
-let r = dbCreateCollection ("Metronica", "./data/")
+let r = dbInsert({
+    nombre: "Agustin",
+    edad: 28
+}, "usuarios")
 
 console.log(r)

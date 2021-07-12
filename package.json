@@ -1,14 +1,8 @@
 {
   "name": "solardb",
-  "version": "0.0.5",
+  "version": "0.0.1",
   "description": "Base de datos no Relacional",
   "main": "main.js",
-  "scripts": {
-    "npmpub": ""
-  },
-  "publishConfig": {
-    "registry":"https://npm.pkg.github.com"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gusgeek/SolarDB.git"

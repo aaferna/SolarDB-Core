@@ -1,6 +1,6 @@
 {
-  "name": "solardb",
-  "version": "0.0.1",
+  "name": "solar-db",
+  "version": "1.0.0",
   "description": "Base de datos no Relacional",
   "main": "main.js",
   "repository": {

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const f = require('./modules/functions');
 
-const dbCreateCollection = (collection, store = "./data/") => {
+exports.dbCreateCollection = (collection, store = "./data/") => {
 
     if (!fs.existsSync(store)) {
         fs.mkdirSync(store)
@@ -13,7 +13,7 @@ const dbCreateCollection = (collection, store = "./data/") => {
     return store + collection
 }
 
-const dbInsert = (dataInsert, collection, store = "./data/") => {
+exports.dbInsert = (dataInsert, collection, store = "./data/") => {
 
     dbCreateCollection (collection, store)
     let id = f.crypto()
@@ -42,7 +42,7 @@ const dbInsert = (dataInsert, collection, store = "./data/") => {
     
 }
 
-const dbGetIndex = (collection = null, store = "./data/") => {
+exports.dbGetIndex = (collection = null, store = "./data/") => {
 
     let directory 
         if( collection === null) { directory = store; } 
@@ -56,14 +56,10 @@ const dbGetIndex = (collection = null, store = "./data/") => {
     return arrC
 }
 
-const dbGetData = (id, collection, store = "./data/") => {
+exports.dbGetData = (id, collection, store = "./data/") => {
 
     let directory = store+collection+"/"+id+".json";
 
     return fs.readFileSync(directory, 'utf-8');
 
 }
-
-let r = dbGetData("b313a8e691ac02753fcd9ae4136ef0cc", "usuarios")
-
-console.log(r)

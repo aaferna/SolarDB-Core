@@ -1,4 +1,4 @@
-console.log(f.crypto())
+
 
 
 > El directorio no es necesario declararlo si se usa el de defecto, es el "./data/", este se puede reemplazar por uno personalizado pero debera ser un directorio absoluto
@@ -59,7 +59,7 @@ Respondera un Array con objetos segun corresponda, puede ser el indice del Store
 Debe especificar el Indice que quiere obtener, Coleccion y Store. El Store, si no se indica, se tomara el predeterminado
 
 ```js
-    dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios", "./data/")
+    let r = dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios", "./data/")
     // or
-    dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios")
+    let r = dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios")
 ```

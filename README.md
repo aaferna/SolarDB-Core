@@ -5,16 +5,19 @@ console.log(f.crypto())
 
 # Crear Store
 
-## Creo Coleccion en troncal original (/data)
+## Creo Coleccion en troncal original
 ```js
-    dbCreateCollection ("Metronica2")
+    let r = dbCreateCollection ("Metronica")
 ```
 
-## Especifico Troncal de Coleccion y su coleccion
+## Especifico Troncal de Store y su Coleccion
 
 ```js
-    dbCreateCollection ("Metronica2", "absolutDir")
+    let r = dbCreateCollection ("Metronica", "./data/")
 ```
+
+Usando la consulta anterior obtenemos 
+    : ./data/Metronica
 
 # Inserto datos en DB
 

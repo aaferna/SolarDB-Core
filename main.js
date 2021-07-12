@@ -2,12 +2,15 @@ const fs = require('fs');
 const f = require('./modules/functions');
 
 const dbCreateCollection = (collection, store = "./data/") => {
+
     if (!fs.existsSync(store)) {
         fs.mkdirSync(store)
     } 
     if (!fs.existsSync(store + collection)) {
         fs.mkdirSync(store + collection)
     } 
+
+    return store + collection
 }
 
 const dbInsert = (dataInsert, collection, store = "./data/") => {
@@ -67,10 +70,6 @@ const dbGetData = (id, collection, store = "./data/") => {
 
 }
 
-// 
-let r = dbInsert({
-    nombre: "Agustin",
-    edad: 27
-}, "usuarios")
+let r = dbCreateCollection ("Metronica", "./data/")
 
 console.log(r)

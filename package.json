@@ -1,0 +1,23 @@
+{
+  "name": "solardb",
+  "version": "0.0.1",
+  "description": "Base de datos no Relacional",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gusgeek/solardb.git"
+  },
+  "author": "Agustin Fernandez",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/gusgeek/solardb/issues"
+  },
+  "homepage": "https://github.com/gusgeek/solardb#readme",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "fs": "^0.0.1-security"
+  }
+}

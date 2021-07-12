@@ -1,10 +1,10 @@
 {
   "name": "solardb",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Base de datos no Relacional",
   "main": "main.js",
   "scripts": {
-    "npmpub": "npm publish"
+    "npmpub": ""
   },
   "repository": {
     "type": "git",

@@ -60,13 +60,7 @@ const dbGetData = (id, collection, store = "./data/") => {
 
     let directory = store+collection+"/"+id+".json";
 
-    fs.readFile(directory, 'utf-8', (err, data) => {
-        if(err) {
-          console.log('error: ', err);
-        } else {
-          console.log(data);
-        }
-      });
+    return fs.readFileSync(directory, 'utf-8');
 
 }
 

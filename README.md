@@ -86,6 +86,8 @@ Debe especificar el Indice que quiere obtener, Coleccion y Store. El Store, si n
     let r = dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios")
 ```
 
+Usando la consulta anterior obtenemos
+
 ```json
     {
         "nombre":"Agustin",

@@ -4,7 +4,7 @@
   "description": "Base de datos no Relacional",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "npmpub": "npm publish"
   },
   "repository": {
     "type": "git",

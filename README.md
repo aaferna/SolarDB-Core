@@ -101,6 +101,9 @@ Usando la consulta anterior obtenemos
 
 # Obtener Datos de un Indice
 
+ Mediante el metodo de dbGetData obtendremos un array de objetos pertenecientes a las versiones del Index. Podemos realizar filtro de este mediante metodos JS como `.pop()` por ejemplo. Con pop nos quedaremos como resultado, el ultimo registro que exista en el index.
+
+
 - Debe especificar el Indice que quiere obtener, Coleccion y Store. El Store, si no se indica, se tomara el predeterminado.
 - Para poder parsear la respuesta es necesario usar JSON.parse() ya que los elementos se guardan como JSON.stringify()
 
@@ -113,12 +116,13 @@ Usando la consulta anterior obtenemos
 
 Usando la consulta anterior obtenemos
 
-```json
-    {
-        "nombre":"Agustin",
-        "edad":27
-    }
+```js
+    [
+        { nombre: 'Agustin', edad: 28 },
+        { nombre: 'Agustin', edad: 28, ciudad: 'San Martin' }
+    ]
 ```
+
 
 # Actualizar Datos de un Indice
 
@@ -130,9 +134,18 @@ Usando la consulta anterior obtenemos
     let r = solar.dbUpdate({
         nombre: "Agustin",
         edad: 28,
-        ciudad: 'San MaRTIN'
+        ciudad: 'San Martin'
     }, "aaa32948fc057d78fc0da13ab03d647c", "Usuarios","./data2/")
 
 ```
 
-Al momento de Actualizar el Index, no se pisaran los datos, si no, que se guardaran como versiones. Mediante el metodo de dbGetData obtendremos un array de objetos pertenecientes a las versiones del Index. Podemos realizar filtro de este mediante metodos JS como `.pop()` por ejemplo. Con pop nos quedaremos como resultado, el ultimo registro que exista en el index.
+Nos respondera 
+
+```js
+    {
+        id: 'aaa32948fc057d78fc0da13ab03d647c',
+        directory: './data2/Usuarios/aaa32948fc057d78fc0da13ab03d647c.json'
+    }
+```
+### Tip
+Al momento de Actualizar el Index, no se pisaran los datos, si no, que se guardaran como versiones.

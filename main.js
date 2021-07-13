@@ -18,43 +18,73 @@ exports.dbInsert = (dataInsert, collection, store = "./data/") => {
     this.dbCreateCollection (collection, store)
     let id = f.crypto()
     let directory = store+collection+"/"+id+".json";
-
-    fs.access(directory, fs.F_OK, (err) => {
-
-        if (err) {
-            fs.writeFile(directory, JSON.stringify(dataInsert), 'utf8', function(err) {
-                if(err) throw err;
-            });
-        } 
-
-    })
-
-    return {
-        id: id,
-        directory: directory
-    }
     
+        try {
+            fs.writeFileSync(directory, JSON.stringify(dataInsert), 'utf8');
+            return {
+                id: id,
+                directory: directory
+            }
+                
+        } catch (err) {
+            if (err.code === 'ENOENT') {
+                return [ {
+                    code: err.code,
+                    msj: "El directorio o archivo no existe2",
+                } ]
+            } else {
+            
+                return [ {
+                    code: err,
+                    msj: "ERRO EXEPTION",
+                } ]
+            }
+        }     
+    
+
 }
 
 exports.dbUpdate = (dataInsert, id, collection, store = "./data/") => {
 
     let directory = store+collection+"/"+id+".json";
 
-    fs.access(directory, fs.F_OK, (err) => {
-
-        if(!err) {
-            fs.appendFile(directory, "\n"+JSON.stringify(dataInsert), function (err) {
-                if (err) throw err;
-            });
+    try {
+            fs.accessSync(directory, fs.F_OK)
+            try {
+                fs.appendFileSync(directory, "\n"+JSON.stringify(dataInsert));
+                return {
+                    id: id,
+                    directory: directory
+                }
+            } catch (err) {
+                if (err.code === 'ENOENT') {
+                    return [ {
+                        code: err.code,
+                        msj: "El directorio o archivo no existe",
+                    } ]
+                } else {
+                
+                    return [ {
+                        code: err,
+                        msj: "ERRO EXEPTION",
+                    } ]
+                }
+            }
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return [ {
+                code: err.code,
+                msj: "El directorio o archivo no existe",
+            } ]
+        } else {
+        
+            return [ {
+                code: err,
+                msj: "ERRO EXEPTION",
+            } ]
         }
-
-    })
-
-    return {
-        id: id,
-        directory: directory
     }
-    
+        
 }
 
 exports.dbGetIndex = (collection = null, store = "./data/") => {
@@ -63,24 +93,54 @@ exports.dbGetIndex = (collection = null, store = "./data/") => {
         if( collection === null) { directory = store; } 
         else { directory = store+collection; }
 
-    let response = fs.readdirSync(directory);
-    let arrC = []
-        response.forEach(r =>{
-                arrC.push(r.replace(".json", ""))            
-        })
-    return arrC
+        try {
+            let response = fs.readdirSync(directory);
+            let arrC = []
+            response.forEach(r =>{
+                    arrC.push(r.replace(".json", ""))            
+            })
+            return arrC
+        } catch (err) {
+            if (err.code === 'ENOENT') {
+                return [ {
+                    code: err.code,
+                    msj: "El directorio o archivo no existe",
+                } ]
+            } else {
+            
+                return [ {
+                    code: err,
+                    msj: "ERRO EXEPTION",
+                } ]
+            }
+        }
+
+    
 }
 
 exports.dbGetData = (id, collection, store = "./data/") => {
 
     let directory = store+collection+"/"+id+".json";
 
-    let response = fs.readFileSync(directory, 'utf-8').split("\n")
-    let arrC = []
+    try {
+        let response = fs.readFileSync(directory, 'utf-8').split("\n")
+        let arrC = []
         response.forEach(r =>{
                 arrC.push(JSON.parse(r))            
         })
-
-    return arrC
+        return arrC
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return [ {
+                code: err.code,
+                msj: "El directorio o archivo no existe",
+            } ]
+          } else {
+            return [ {
+                code: err,
+                msj: "ERRO EXEPTION",
+            } ]
+          }
+    }
 
 }

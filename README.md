@@ -66,7 +66,7 @@ Usando la consulta anterior obtenemos
 
 Respondera un Array con objetos segun corresponda, puede ser el indice del Store que estra llamado segun lo nombre como el indice de colecciones
 
-### Obtener Index de una Coleccion
+## Obtener Index de una Coleccion
 
 ```js
     let r = solar.dbGetIndex("usuarios", "/data2/")
@@ -82,8 +82,7 @@ Usando la consulta anterior obtenemos
     [ 'b313a8e691ac02753fcd9ae4136ef0cc' ]
 ```
 
-
-### Obtener Colecciones de un Store especifico
+## Obtener Colecciones de un Store especifico
 
 ```js
     let r = solar.dbGetIndex(null, "/data2/")
@@ -98,7 +97,6 @@ Usando la consulta anterior obtenemos
 ```js
     [ 'usuarios' ]
 ```
-
 # Obtener Datos de un Indice
 
  Mediante el metodo de dbGetData obtendremos un array de objetos pertenecientes a las versiones del Index. Podemos realizar filtro de este mediante metodos JS como `.pop()` por ejemplo. Con pop nos quedaremos como resultado, el ultimo registro que exista en el index.
@@ -149,3 +147,17 @@ Nos respondera
 ```
 ### Tip
 Al momento de Actualizar el Index, no se pisaran los datos, si no, que se guardaran como versiones.
+
+
+# Manejador de Errores
+
+En los casos que se mal indique un Index, Store o Coleccion nos encontraremos con el siguiente error
+
+```js
+    [ 
+        { 
+            code: 'ENOENT',
+            msj: 'El directorio o archivo no existe' 
+        } 
+    ]
+```

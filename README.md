@@ -1,4 +1,27 @@
 
+SolarDB es una base de datos no relacional basica, para aquellos proyectos que necesiten de una de forma facil, practica y sin complicaciones de implementacion.
+
+#
+
+
+<p align="center">
+  <br><br>
+  Este proyecto se encuentra en fase experimental, puede sufrir cambios
+  <br><br>
+</p>
+
+# Instalacion
+
+Podra realizarlo mediante NPM con el siguiente comando
+
+```
+npm i solardb-core
+```
+Luego de esto, es necesario invocar el mismo desde el proyecto con la siguiente linea
+
+```js
+    const solar = require("solardb-core")
+```
 
 
 - El directorio no es necesario declararlo si se usa el de defecto, es el "./data/", este se puede reemplazar por uno personalizado pero debera ser un directorio absoluto
@@ -7,13 +30,13 @@
 
 ## Creo Coleccion en directorio principal
 ```js
-    let r = dbCreateCollection ("Metronica")
+    let r = solar.dbCreateCollection ("Metronica")
 ```
 
 ## Especifico directorio de Store y su Coleccion
 
 ```js
-    let r = dbCreateCollection ("Metronica", "./data/")
+    let r = solar.dbCreateCollection ("Metronica", "./data/")
 ```
 
 Usando la consulta anterior obtenemos 
@@ -23,7 +46,7 @@ Usando la consulta anterior obtenemos
 # Inserto datos en DB
 
 ```js
-    let r = dbInsert({
+    let r = solar.dbInsert({
         nombre: "Agustin",
         edad: 28
     }, "usuarios")
@@ -46,11 +69,11 @@ Respondera un Array con objetos segun corresponda, puede ser el indice del Store
 ### Obtener Index de una Coleccion
 
 ```js
-    let r = dbGetIndex("usuarios", "/data2/")
+    let r = solar.dbGetIndex("usuarios", "/data2/")
 
         // OR
 
-    let r = dbGetIndex("usuarios")
+    let r = solar.dbGetIndex("usuarios")
 ```
 
 Usando la consulta anterior obtenemos
@@ -63,11 +86,11 @@ Usando la consulta anterior obtenemos
 ### Obtener Colecciones de un Store especifico
 
 ```js
-    let r = dbGetIndex(null, "/data2/")
+    let r = solar.dbGetIndex(null, "/data2/")
 
         // Sin especificar directorio, se obtiene las Colecciones de /data
 
-    let r = dbGetIndex()
+    let r = solar.dbGetIndex()
 ```
 
 Usando la consulta anterior obtenemos
@@ -83,9 +106,9 @@ Usando la consulta anterior obtenemos
 
 
 ```js
-    let r = dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios", "./data/")
+    let r = solar.dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios", "./data/")
         // or
-    let r = dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios")
+    let r = solar.dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios")
 ```
 
 Usando la consulta anterior obtenemos

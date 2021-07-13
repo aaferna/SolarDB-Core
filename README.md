@@ -15,7 +15,7 @@ SolarDB es una base de datos no relacional basica, para aquellos proyectos que n
 Podra realizarlo mediante NPM con el siguiente comando
 
 ```
-npm i solardb-core
+    npm i solardb-core
 ```
 Luego de esto, es necesario invocar el mismo desde el proyecto con la siguiente linea
 

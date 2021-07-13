@@ -5,12 +5,12 @@
 
 # Crear Store
 
-## Creo Coleccion en troncal original
+## Creo Coleccion en directorio principal
 ```js
     let r = dbCreateCollection ("Metronica")
 ```
 
-## Especifico Troncal de Store y su Coleccion
+## Especifico directorio de Store y su Coleccion
 
 ```js
     let r = dbCreateCollection ("Metronica", "./data/")
@@ -24,9 +24,9 @@ Usando la consulta anterior obtenemos
 
 ```js
     let r = dbInsert({
-                nombre: "Agustin",
-                edad: 28
-            }, "usuarios")
+        nombre: "Agustin",
+        edad: 28
+    }, "usuarios")
 
 ```
 
@@ -43,12 +43,12 @@ Usando la consulta anterior obtenemos
 
 Respondera un Array con objetos segun corresponda, puede ser el indice del Store que estra llamado segun lo nombre como el indice de colecciones
 
-### Obtener Index de una coleccion
+### Obtener Index de una Coleccion
 
 ```js
     let r = dbGetIndex("usuarios", "/data2/")
 
-    // or
+        // OR
 
     let r = dbGetIndex("usuarios")
 ```
@@ -65,7 +65,7 @@ Usando la consulta anterior obtenemos
 ```js
     let r = dbGetIndex(null, "/data2/")
 
-// Sin especificar directorio, se obtiene las Colecciones de /data
+        // Sin especificar directorio, se obtiene las Colecciones de /data
 
     let r = dbGetIndex()
 ```
@@ -84,7 +84,7 @@ Usando la consulta anterior obtenemos
 
 ```js
     let r = dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios", "./data/")
-    // or
+        // or
     let r = dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios")
 ```
 

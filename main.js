@@ -15,7 +15,7 @@ exports.dbCreateCollection = (collection, store = "./data/") => {
 
 exports.dbInsert = (dataInsert, collection, store = "./data/") => {
 
-    dbCreateCollection (collection, store)
+    this.dbCreateCollection (collection, store)
     let id = f.crypto()
     let directory = store+collection+"/"+id+".json";
 
@@ -27,11 +27,26 @@ exports.dbInsert = (dataInsert, collection, store = "./data/") => {
             });
         } 
 
-        // else {
-        //     fs.appendFile(directory, dataInsert, function (err) {
-        //         if (err) throw err;
-        //     });
-        // }
+    })
+
+    return {
+        id: id,
+        directory: directory
+    }
+    
+}
+
+exports.dbUpdate = (dataInsert, id, collection, store = "./data/") => {
+
+    let directory = store+collection+"/"+id+".json";
+
+    fs.access(directory, fs.F_OK, (err) => {
+
+        if(!err) {
+            fs.appendFile(directory, "\n"+JSON.stringify(dataInsert), function (err) {
+                if (err) throw err;
+            });
+        }
 
     })
 
@@ -60,6 +75,12 @@ exports.dbGetData = (id, collection, store = "./data/") => {
 
     let directory = store+collection+"/"+id+".json";
 
-    return fs.readFileSync(directory, 'utf-8');
+    let response = fs.readFileSync(directory, 'utf-8').split("\n")
+    let arrC = []
+        response.forEach(r =>{
+                arrC.push(JSON.parse(r))            
+        })
+
+    return arrC
 
 }

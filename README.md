@@ -119,3 +119,20 @@ Usando la consulta anterior obtenemos
         "edad":27
     }
 ```
+
+# Actualizar Datos de un Indice
+
+ Indicamos el JSON, Index, Coleccion y Store. 
+ De esta forma actualizamos el Index:
+
+```js
+
+    let r = solar.dbUpdate({
+        nombre: "Agustin",
+        edad: 28,
+        ciudad: 'San MaRTIN'
+    }, "aaa32948fc057d78fc0da13ab03d647c", "Usuarios","./data2/")
+
+```
+
+Al momento de Actualizar el Index, no se pisaran los datos, si no, que se guardaran como versiones. Mediante el metodo de dbGetData obtendremos un array de objetos pertenecientes a las versiones del Index. Podemos realizar filtro de este mediante metodos JS como `.pop()` por ejemplo. Con pop nos quedaremos como resultado, el ultimo registro que exista en el index.

@@ -160,6 +160,18 @@ Nos respondera
 ### Tip
 Al momento de Actualizar el Index, no se pisaran los datos, si no, que se guardaran como versiones.
 
+# Eliminar Indice
+
+ Indicamos el Index, Coleccion y Store. 
+ De esta forma Eliminamos el Index:
+
+```js
+
+    let r = solar.dbDeleteData("aaa32948fc057d78fc0da13ab03d647c", "Usuarios","./data2/")
+
+```
+
+Nos respondera el valor 1 para la eliminacion correcta
 
 # Manejador de Errores
 

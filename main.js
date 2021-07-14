@@ -144,3 +144,28 @@ exports.dbGetData = (id, collection, store = "./data/") => {
     }
 
 }
+exports.dbDeleteData = (id, collection, store = "./data/") => {
+
+    let directory = store+collection+"/"+id+".json";
+
+    try {
+
+        fs.unlinkSync(directory);
+        return 1
+
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return [ {
+                code: err.code,
+                msj: "El directorio o archivo no existe",
+            } ]
+          } else {
+            return [ {
+                code: err,
+                msj: "ERRO EXEPTION",
+            } ]
+          }
+    }
+
+}
+

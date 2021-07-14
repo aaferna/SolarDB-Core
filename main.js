@@ -144,6 +144,7 @@ exports.dbGetData = (id, collection, store = "./data/") => {
     }
 
 }
+
 exports.dbDeleteData = (id, collection, store = "./data/") => {
 
     let directory = store+collection+"/"+id+".json";

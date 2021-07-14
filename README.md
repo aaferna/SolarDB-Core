@@ -4,15 +4,21 @@
 
 <p align="center">
   <img width="500" src="https://github.com/gusgeek/SolarDB-Core/blob/main/logo.svg">
+  <br>
+  <br>
+  SolarDB es el motor de una base de datos no relacional, pensada para aquellos proyectos que necesiten de una base de datos facil, practica y sin complicaciones de implementacion.
 </p>
-SolarDB es una base de datos no relacional basica, para aquellos proyectos que necesiten de una de forma facil, practica y sin complicaciones de implementacion.
+
+
 
 #
 
 
 <p align="center">
   <br><br>
-  Este proyecto se encuentra en fase experimental, puede sufrir cambios
+  <strong>
+    Este proyecto se encuentra en fase experimental, puede sufrir cambios
+  </strong>
   <br><br>
 </p>
 

@@ -49,27 +49,27 @@ exports.dbUpdate = (dataInsert, id, collection, store = "./data/") => {
     let directory = store+collection+"/"+id+".json";
 
     try {
-            fs.accessSync(directory, fs.F_OK)
-            try {
-                fs.appendFileSync(directory, "\n"+JSON.stringify(dataInsert));
-                return {
-                    id: id,
-                    directory: directory
-                }
-            } catch (err) {
-                if (err.code === 'ENOENT') {
-                    return [ {
-                        code: err.code,
-                        msj: "El directorio o archivo no existe",
-                    } ]
-                } else {
-                
-                    return [ {
-                        code: err,
-                        msj: "ERRO EXEPTION",
-                    } ]
-                }
+        fs.accessSync(directory, fs.F_OK)
+        try {
+            fs.appendFileSync(directory, "\n"+JSON.stringify(dataInsert));
+            return {
+                id: id,
+                directory: directory
             }
+        } catch (err) {
+            if (err.code === 'ENOENT') {
+                return [ {
+                    code: err.code,
+                    msj: "El directorio o archivo no existe",
+                } ]
+            } else {
+            
+                return [ {
+                    code: err,
+                    msj: "ERRO EXEPTION",
+                } ]
+            }
+        }
     } catch (err) {
         if (err.code === 'ENOENT') {
             return [ {

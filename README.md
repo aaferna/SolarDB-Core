@@ -185,3 +185,14 @@ En los casos que se mal indique un Index, Store o Coleccion nos encontraremos co
         } 
     ]
 ```
+
+<p align="center">
+  <br>
+  <bR>
+    <img src="https://img.shields.io/github/downloads/gusgeek/SolarDB-Core/total">  
+    <img src="https://img.shields.io/github/v/release/gusgeek/SolarDB-Core">  
+    <img src="https://img.shields.io/github/release-date/gusgeek/SolarDB-Core">  
+    <img src="https://img.shields.io/github/languages/code-size/gusgeek/SolarDB-Core">
+  <br><br>
+  <strong>:pencil2: con :heart:</strong>
+</p>

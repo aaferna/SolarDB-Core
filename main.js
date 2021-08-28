@@ -145,6 +145,72 @@ exports.dbGetData = (id, collection, store = "./data/") => {
 
 }
 
+exports.dbGetDateModify = (id, collection, store = "./data/") => {
+
+    let directory = store+collection+"/"+id+".json";
+
+    try {
+        statsObj = fs.statSync(directory);
+        let response = fs.readFileSync(directory, 'utf-8').split("\n").toString().split(' ')
+        return response
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return [ {
+                code: err.code,
+                msj: "El directorio o archivo no existe",
+            } ]
+          } else {
+            return [ {
+                code: err,
+                msj: "ERRO EXEPTION",
+            } ]
+          }
+    }
+
+}
+
+exports.dbGetLatestFile = (collection, store = "./data/") => {
+
+    let directory = store+collection+"/";
+
+    try {
+
+        var fs = require('fs'),
+        path = require('path'),
+        _ = require('underscore');
+
+        // Return only base file name without dir
+        function getMostRecentFileName(dir) {
+            var files = fs.readdirSync(dir);
+            // use underscore for max()
+            return _.max(files, function (f) {
+                var fullpath = path.join(dir, f);
+                // ctime = creation time is used
+                // replace with mtime for modification time
+                return fs.statSync(fullpath).ctime;
+            });
+        }
+
+        return getMostRecentFileName(directory).split('.json')[0]
+
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            return [ {
+                code: err.code,
+                msj: "El directorio o archivo no existe",
+            } ]
+          } else {
+            return [ {
+                code: err,
+                msj: "ERRO EXEPTION",
+            } ]
+          }
+    }
+
+}
+
+
+
 exports.dbDeleteData = (id, collection, store = "./data/") => {
 
     let directory = store+collection+"/"+id+".json";

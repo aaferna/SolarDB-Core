@@ -160,6 +160,45 @@ Nos respondera
 ### Tip
 Al momento de Actualizar el Index, no se pisaran los datos, si no, que se guardaran como versiones.
 
+# Obtener fecha de Modificacion
+
+Con este metodo podremos obtener la fecha y hora en que se modifico por ultima vez el Index
+
+Indicamos el Index, Coleccion y Store:
+
+```js
+
+    let r = solar.dbGetDateModify("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios", "./data/")
+
+```
+
+Nos respondera lo siguiente:
+
+```js
+    [ 'Sat', 'Aug', '28', '2021', '12:45:06', 'GMT-0300', '(GMT-03:00)' ]   
+```
+
+
+# Obtener ultimo Index creado / modificado
+
+Con este metodo podremos obtener el ultimo archivo modificado o creado de la Coleccion
+
+Indicamos la Coleccion y Store
+
+```js
+
+    let r = solar.dbGetLatestFile("usuarios", "./data/")
+
+```
+
+Nos respondera un String con el ID del Index
+
+```js
+    c02746e619a0d023f89126ed31be6373
+```
+
+
+
 # Eliminar Indice
 
  Indicamos el Index, Coleccion y Store. 

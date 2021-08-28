@@ -1,6 +1,6 @@
 {
   "name": "solardb-core",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Base de datos no Relacional",
   "main": "main.js",
   "repository": {
@@ -15,7 +15,8 @@
   "homepage": "https://github.com/gusgeek/SolarDB-Core#readme",
   "dependencies": {
     "child_process": "^1.0.2",
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "underscore": "^1.13.1"
   },
   "devDependencies": {},
   "keywords": [

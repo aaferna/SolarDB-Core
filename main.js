@@ -150,9 +150,8 @@ exports.dbGetDateModify = (id, collection, store = "./data/") => {
     let directory = store+collection+"/"+id+".json";
 
     try {
-        statsObj = fs.statSync(directory);
-        let response = fs.readFileSync(directory, 'utf-8').split("\n").toString().split(' ')
-        return response
+        statsObj = fs.statSync(directory)
+        return statsObj.birthtime.toUTCString().replace(',', "").split(' ')
     } catch (err) {
         if (err.code === 'ENOENT') {
             return [ {
@@ -190,8 +189,10 @@ exports.dbGetLatestFile = (collection, store = "./data/") => {
                 return fs.statSync(fullpath).ctime;
             });
         }
+        let index = getMostRecentFileName(directory).split('.json')[0]
 
-        return getMostRecentFileName(directory).split('.json')[0]
+        
+        return { index: index, date: this.dbGetDateModify(index, collection, store)}
 
     } catch (err) {
         if (err.code === 'ENOENT') {

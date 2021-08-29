@@ -175,7 +175,7 @@ Indicamos el Index, Coleccion y Store:
 Nos respondera lo siguiente:
 
 ```js
-    [ 'Sat', 'Aug', '28', '2021', '12:45:06', 'GMT-0300', '(GMT-03:00)' ]   
+    [ 'Tue', '13', 'Jul', '2021', '21:30:08', 'GMT' ]
 ```
 
 
@@ -194,7 +194,10 @@ Indicamos la Coleccion y Store
 Nos respondera un String con el ID del Index
 
 ```js
-    c02746e619a0d023f89126ed31be6373
+    {
+        index: 'b313a8e691ac02753fcd9ae4136ef0cc',
+        date: [ 'Tue', '13', 'Jul', '2021', '21:30:08', 'GMT' ]
+    }
 ```
 
 

@@ -180,7 +180,7 @@ exports.dbGetLatestFile = (collection, store = "./data/") => {
 
     try {
 
-        let id = fs.readFileSync(directory+"/.indx", 'utf-8') + 1
+        let id = fs.readFileSync(directory+"/.indx", 'utf-8')
 
         return id
 

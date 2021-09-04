@@ -5,20 +5,23 @@ exports.dbCreateCollection = (collection, store = "./data/") => {
 
     if (!fs.existsSync(store)) {
         fs.mkdirSync(store)
+        fs.writeFileSync(store+collection+"/.indx", "0", 'utf8');
     } 
     if (!fs.existsSync(store + collection)) {
         fs.mkdirSync(store + collection)
+        fs.writeFileSync(store+collection+"/.indx", "0", 'utf8');
     } 
-
+    
     return store + collection
 }
 
 exports.dbInsert = (dataInsert, collection, store = "./data/") => {
 
     this.dbCreateCollection (collection, store)
-    let id = f.crypto()
-    let directory = store+collection+"/"+id+".json";
-    
+    let id = parseInt(fs.readFileSync(store+collection+"/.indx", 'utf-8')) + 1
+    let directory = store+collection+"/"+id+".sol";
+    fs.writeFileSync(store+collection+"/.indx", id.toString(), 'utf8');
+
         try {
             fs.writeFileSync(directory, JSON.stringify(dataInsert), 'utf8');
             return {
@@ -46,7 +49,7 @@ exports.dbInsert = (dataInsert, collection, store = "./data/") => {
 
 exports.dbUpdate = (dataInsert, id, collection, store = "./data/") => {
 
-    let directory = store+collection+"/"+id+".json";
+    let directory = store+collection+"/"+id+".sol";
 
     try {
         fs.accessSync(directory, fs.F_OK)
@@ -97,7 +100,9 @@ exports.dbGetIndex = (collection = null, store = "./data/") => {
             let response = fs.readdirSync(directory);
             let arrC = []
             response.forEach(r =>{
-                    arrC.push(r.replace(".json", ""))            
+                if(r !== '.indx'){
+                    arrC.push(r.replace(".sol", ""))            
+                }
             })
             return arrC
         } catch (err) {
@@ -120,7 +125,8 @@ exports.dbGetIndex = (collection = null, store = "./data/") => {
 
 exports.dbGetData = (id, collection, store = "./data/") => {
 
-    let directory = store+collection+"/"+id+".json";
+    let directory = store+collection+"/"+id+".sol";
+    
 
     try {
         let response = fs.readFileSync(directory, 'utf-8').split("\n")
@@ -147,7 +153,7 @@ exports.dbGetData = (id, collection, store = "./data/") => {
 
 exports.dbGetDateModify = (id, collection, store = "./data/") => {
 
-    let directory = store+collection+"/"+id+".json";
+    let directory = store+collection+"/"+id+".sol";
 
     try {
         statsObj = fs.statSync(directory)
@@ -189,7 +195,7 @@ exports.dbGetLatestFile = (collection, store = "./data/") => {
                 return fs.statSync(fullpath).ctime;
             });
         }
-        let index = getMostRecentFileName(directory).split('.json')[0]
+        let index = getMostRecentFileName(directory).split('.sol')[0]
 
         
         return { index: index, date: this.dbGetDateModify(index, collection, store)}
@@ -210,11 +216,9 @@ exports.dbGetLatestFile = (collection, store = "./data/") => {
 
 }
 
-
-
 exports.dbDeleteData = (id, collection, store = "./data/") => {
 
-    let directory = store+collection+"/"+id+".json";
+    let directory = store+collection+"/"+id+".sol";
 
     try {
 

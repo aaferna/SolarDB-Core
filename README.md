@@ -69,8 +69,8 @@ Usando la consulta anterior obtenemos
 
 ```json
     {
-        "id": "c6a7f55fbf97e0de9478c6f4fd7e6c2b",
-        "directory": "./data/usuarios/c6a7f55fbf97e0de9478c6f4fd7e6c2b.json"
+        "id": "1",
+        "directory": "./data/usuarios/1.sol"
     }
 ```
 
@@ -91,7 +91,7 @@ Respondera un Array con objetos segun corresponda, puede ser el indice del Store
 Usando la consulta anterior obtenemos
 
 ```js
-    [ 'b313a8e691ac02753fcd9ae4136ef0cc' ]
+    [ '1' ]
 ```
 
 ## Obtener Colecciones de un Store especifico
@@ -119,9 +119,9 @@ Usando la consulta anterior obtenemos
 
 
 ```js
-    let r = solar.dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios", "./data/")
+    let r = solar.dbGetData("1", "usuarios", "./data/")
         // or
-    let r = solar.dbGetData("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios")
+    let r = solar.dbGetData("1", "usuarios")
 ```
 
 Usando la consulta anterior obtenemos
@@ -145,7 +145,7 @@ Usando la consulta anterior obtenemos
         nombre: "Agustin",
         edad: 28,
         ciudad: 'San Martin'
-    }, "aaa32948fc057d78fc0da13ab03d647c", "Usuarios","./data2/")
+    }, "1", "Usuarios","./data2/")
 
 ```
 
@@ -153,8 +153,8 @@ Nos respondera
 
 ```js
     {
-        id: 'aaa32948fc057d78fc0da13ab03d647c',
-        directory: './data2/Usuarios/aaa32948fc057d78fc0da13ab03d647c.json'
+        id: '1',
+        directory: './data2/Usuarios/1.sol'
     }
 ```
 ### Tip
@@ -168,7 +168,7 @@ Indicamos el Index, Coleccion y Store:
 
 ```js
 
-    let r = solar.dbGetDateModify("53a9697fc3350a083f5f4daeb6da1cf9", "usuarios", "./data/")
+    let r = solar.dbGetDateModify("1", "usuarios", "./data/")
 
 ```
 
@@ -195,7 +195,7 @@ Nos respondera un String con el ID del Index
 
 ```js
     {
-        index: 'b313a8e691ac02753fcd9ae4136ef0cc',
+        index: '1',
         date: [ 'Tue', '13', 'Jul', '2021', '21:30:08', 'GMT' ]
     }
 ```
@@ -209,7 +209,7 @@ Nos respondera un String con el ID del Index
 
 ```js
 
-    let r = solar.dbDeleteData("aaa32948fc057d78fc0da13ab03d647c", "Usuarios","./data2/")
+    let r = solar.dbDeleteData("1", "Usuarios","./data2/")
 
 ```
 

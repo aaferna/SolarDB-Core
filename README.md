@@ -14,14 +14,6 @@
 #
 
 
-<p align="center">
-  <br><br>
-  <strong>
-    Este proyecto se encuentra en fase experimental, puede sufrir cambios
-  </strong>
-  <br><br>
-</p>
-
 # Instalacion
 
 Podra realizarlo mediante NPM con el siguiente comando

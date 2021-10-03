@@ -3,10 +3,6 @@ const f = require('./modules/functions');
 
 exports.dbCreateCollection = (collection, store = "./data/") => {
 
-    if (!fs.existsSync(store)) {
-        fs.mkdirSync(store)
-        fs.writeFileSync(store+collection+"/.indx", "0", 'utf8');
-    } 
     if (!fs.existsSync(store + collection)) {
         fs.mkdirSync(store + collection)
         fs.writeFileSync(store+collection+"/.indx", "0", 'utf8');

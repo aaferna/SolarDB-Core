@@ -28,7 +28,7 @@
     <img src="https://img.shields.io/github/v/release/gusgeek/SolarDB-Core">  
     <img src="https://img.shields.io/github/release-date/gusgeek/SolarDB-Core">  
     <img src="https://img.shields.io/github/languages/code-size/gusgeek/SolarDB-Core">
-    <img src="https://img.shields.io/npm/dt/solardb-core">
+    <img src="https://img.shields.io/npm/dt/solardb-core?label=NPM%20Downloads">
     
   <br><br>
   <strong>:pencil2: con :heart:</strong>

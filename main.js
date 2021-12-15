@@ -123,7 +123,6 @@ exports.dbGetIndex = (collection = null, store = "./data/") => {
 exports.dbGetData = (id, collection, store = "./data/") => {
 
     let directory = store+collection+"/"+id+".sol";
-    
 
     try {
         let response = fs.readFileSync(directory, 'utf-8').split("\n")
@@ -222,3 +221,66 @@ exports.dbDeleteData = (id, collection, store = "./data/") => {
 
 }
 
+exports.dbDeleteInsert = (matrixID, id, collection, store = "./data/") => {
+
+    let directory = store+collection+"/"+id+".sol";
+
+    try {
+
+        let response = fs.readFileSync(directory, 'utf-8').split("\n"),
+            finsert = true,
+            data
+
+            if (response[0] !== '') {
+
+                fs.truncateSync(directory, 0)
+
+                for( let i = 0; i < response.length; i++){ 
+                                   
+                    if ( i !== matrixID ) { 
+        
+                        if(finsert){
+                            data = JSON.stringify(  JSON.parse(response[i]) )
+                            finsert = false
+                        } else { 
+                            data = "\n"+JSON.stringify(  JSON.parse(response[i]) )
+                        }
+        
+                        fs.appendFileSync(directory, data);
+        
+                    } 
+                }
+
+                return {
+                    id: id,
+                    matrixID: matrixID,
+                    deleted: true,
+                    data:  fs.readFileSync(directory, 'utf-8').split("\n")
+
+                }
+
+            } else {
+                return {
+                    id: id,
+                    matrixID: matrixID,
+                    deleted: false
+                }
+            }
+
+    } catch (err) {
+        console.log("a",err)
+
+        if (err.code === 'ENOENT') {
+            return [ {
+                code: err.code,
+                msj: "El directorio o archivo no existe",
+            } ]
+          } else {
+            return [ {
+                code: err,
+                msj: "ERRO EXEPTION",
+            } ]
+          }
+    }
+
+}

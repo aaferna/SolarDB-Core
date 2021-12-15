@@ -255,7 +255,7 @@ exports.dbDeleteInsert = (matrixID, id, collection, store = "./data/") => {
                     id: id,
                     matrixID: matrixID,
                     deleted: true,
-                    data:  fs.readFileSync(directory, 'utf-8').split("\n")
+                    data:  JSON.parse(fs.readFileSync(directory, 'utf-8').split("\n"))
 
                 }
 
@@ -270,6 +270,42 @@ exports.dbDeleteInsert = (matrixID, id, collection, store = "./data/") => {
     } catch (err) {
         console.log("a",err)
 
+        if (err.code === 'ENOENT') {
+            return [ {
+                code: err.code,
+                msj: "El directorio o archivo no existe",
+            } ]
+          } else {
+            return [ {
+                code: err,
+                msj: "ERRO EXEPTION",
+            } ]
+          }
+    }
+
+}
+
+exports.dbFlushInsert = (data, id, collection, store = "./data/") => {
+
+    let directory = store+collection+"/"+id+".sol";
+
+    try {
+
+        let response = fs.readFileSync(directory, 'utf-8').split("\n")
+
+            if (response[0] !== '') {
+
+                fs.truncateSync(directory, 0)
+                fs.appendFileSync(directory, JSON.stringify( data ) );
+
+                return {
+                    id: id,
+                    data: JSON.parse( fs.readFileSync(directory, 'utf-8').split("\n"))
+                }
+
+            } 
+
+    } catch (err) {
         if (err.code === 'ENOENT') {
             return [ {
                 code: err.code,

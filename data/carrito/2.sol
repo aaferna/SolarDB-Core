@@ -1,1 +1,0 @@
-{"id":"1","timestamp":"a","nombre":"as","descripcion":"assas","codigo":"assa","foto":"assas","precio":"asas","stock":"assa"}

@@ -1,322 +1,196 @@
-const fs = require('fs');
-const f = require('./modules/functions');
+const fs = require('fs').promises;
 
-exports.dbCreateCollection = (collection, store = "./data/") => {
-    if (!fs.existsSync(store)) {
-        fs.mkdirSync(store)
-    } 
-    if (!fs.existsSync(store + collection)) {
-        fs.mkdirSync(store+collection)
-        fs.writeFileSync(store+collection+"/.indx", "0", 'utf8');
-    } 
-    return store + collection
-}
-
-exports.dbInsert = (dataInsert, collection, store = "./data/") => {
-
-    this.dbCreateCollection (collection, store)
-    let id = parseInt(fs.readFileSync(store+collection+"/.indx", 'utf-8')) + 1
-    let directory = store+collection+"/"+id+".sol";
-    fs.writeFileSync(store+collection+"/.indx", id.toString(), 'utf8');
-
-        try {
-            fs.writeFileSync(directory, JSON.stringify(dataInsert), 'utf8');
-            return {
-                id: id,
-                directory: directory
-            }
-                
-        } catch (err) {
-            if (err.code === 'ENOENT') {
-                return [ {
-                    code: err.code,
-                    msj: "El directorio o archivo no existe2",
-                } ]
-            } else {
-            
-                return [ {
-                    code: err,
-                    msj: "ERRO EXEPTION",
-                } ]
-            }
-        }     
-    
-
-}
-
-exports.dbUpdate = (dataInsert, id, collection, store = "./data/") => {
-
-    let directory = store+collection+"/"+id+".sol";
+const dbCreateCollection = async (collection, store = "./data/") => {
+    const collectionPath = store + collection;
 
     try {
-        fs.accessSync(directory, fs.F_OK)
+        await fs.mkdir(store);
+    } catch (err) {
+        if (err.code !== 'EEXIST') {
+            throw err;
+        }
+    }
+
+    try {
+        await fs.mkdir(collectionPath);
+        await fs.writeFile(collectionPath + "/.indx", "0", 'utf8');
+    } catch (err) {
+        if (err.code !== 'EEXIST') {
+            throw err;
+        }
+    }
+
+    return collectionPath;
+};
+
+const dbInsert = async (dataInsert, collection, store = "./data/") => {
+    const collectionPath = await dbCreateCollection(collection, store);
+    const id = parseInt(await fs.readFile(collectionPath + "/.indx", 'utf-8')) + 1;
+    const directory = `${collectionPath}/${id}.sol`;
+
+    await fs.writeFile(collectionPath + "/.indx", id.toString(), 'utf8');
+
+    try {
+        await fs.writeFile(directory, JSON.stringify(dataInsert), 'utf8');
+        return { id, directory };
+    } catch (err) {
+        return handleError(err);
+    }
+};
+
+const dbUpdate = async (dataInsert, id, collection, store = "./data/") => {
+    const directory = `${store}${collection}/${id}.sol`;
+
+    try {
+        await fs.access(directory, fs.F_OK);
+
         try {
-            fs.appendFileSync(directory, "\n"+JSON.stringify(dataInsert));
-            return {
-                id: id,
-                directory: directory
-            }
+            await fs.appendFile(directory, `\n${JSON.stringify(dataInsert)}`);
+            return { id, directory };
         } catch (err) {
-            if (err.code === 'ENOENT') {
-                return [ {
-                    code: err.code,
-                    msj: "El directorio o archivo no existe",
-                } ]
-            } else {
-            
-                return [ {
-                    code: err,
-                    msj: "ERRO EXEPTION",
-                } ]
-            }
+            return handleError(err);
         }
     } catch (err) {
-        if (err.code === 'ENOENT') {
-            return [ {
-                code: err.code,
-                msj: "El directorio o archivo no existe",
-            } ]
+        return handleError(err);
+    }
+};
+
+const dbGetIndex = async (collection = null, store = "./data/") => {
+    const directory = collection === null ? store : `${store}${collection}`;
+
+    try {
+        const response = await fs.readdir(directory);
+        const arrC = response.filter(r => r !== '.indx').map(r => r.replace(".sol", ""));
+        return arrC;
+    } catch (err) {
+        return handleError(err);
+    }
+};
+
+const dbGetData = async (id, collection, store = "./data/") => {
+    const directory = `${store}${collection}/${id}.sol`;
+
+    try {
+        const response = (await fs.readFile(directory, 'utf-8')).split("\n");
+        const arrC = response.map(r => JSON.parse(r));
+        return arrC;
+    } catch (err) {
+        return handleError(err);
+    }
+};
+
+const dbGetDateModify = async (id, collection, store = "./data/") => {
+    const directory = `${store}${collection}/${id}.sol`;
+
+    try {
+        const statsObj = await fs.stat(directory);
+        return statsObj.birthtime.toUTCString().replace(',', "").split(' ');
+    } catch (err) {
+        return handleError(err);
+    }
+};
+
+const dbGetLatestFile = async (collection, store = "./data/") => {
+    const directory = `${store}${collection}/`;
+
+    try {
+        const id = await fs.readFile(directory + "/.indx", 'utf-8');
+        return id;
+    } catch (err) {
+        return handleError(err);
+    }
+};
+
+const dbDeleteData = async (id, collection, store = "./data/") => {
+    const directory = `${store}${collection}/${id}.sol`;
+
+    try {
+        await fs.unlink(directory);
+        return 1;
+    } catch (err) {
+        return handleError(err);
+    }
+};
+
+const dbDeleteInsert = async (matrixID, id, collection, store = "./data/") => {
+    const directory = `${store}${collection}/${id}.sol`;
+
+    try {
+        const response = (await fs.readFile(directory, 'utf-8')).split("\n");
+        let finsert = true;
+        let data;
+
+        if (response[0] !== '') {
+            fs.truncateSync(directory, 0);
+
+            for (let i = 0; i < response.length; i++) {
+                if (i !== matrixID) {
+                    if (finsert) {
+                        data = JSON.stringify(JSON.parse(response[i]));
+                        finsert = false;
+                    } else {
+                        data = "\n" + JSON.stringify(JSON.parse(response[i]));
+                    }
+
+                    await fs.appendFile(directory, data);
+                }
+            }
+
+            return {
+                id,
+                matrixID,
+                deleted: true,
+                data: JSON.parse((await fs.readFile(directory, 'utf-8')).split("\n"))
+            };
         } else {
-        
-            return [ {
-                code: err,
-                msj: "ERRO EXEPTION",
-            } ]
+            return {
+                id,
+                matrixID,
+                deleted: false
+            };
         }
+    } catch (err) {
+        return handleError(err);
     }
-        
-}
+};
 
-exports.dbGetIndex = (collection = null, store = "./data/") => {
+const dbFlushInsert = async (data, id, collection, store = "./data/") => {
+    const directory = `${store}${collection}/${id}.sol`;
 
-    let directory 
-        if( collection === null) { directory = store; } 
-        else { directory = store+collection; }
+    try {
+        const response = (await fs.readFile(directory, 'utf-8')).split("\n");
 
-        try {
-            let response = fs.readdirSync(directory);
-            let arrC = []
-            response.forEach(r =>{
-                if(r !== '.indx'){
-                    arrC.push(r.replace(".sol", ""))            
-                }
-            })
-            return arrC
-        } catch (err) {
-            if (err.code === 'ENOENT') {
-                return [ {
-                    code: err.code,
-                    msj: "El directorio o archivo no existe",
-                } ]
-            } else {
-            
-                return [ {
-                    code: err,
-                    msj: "ERRO EXEPTION",
-                } ]
-            }
+        if (response[0] !== '') {
+            fs.truncateSync(directory, 0);
+            await fs.appendFile(directory, JSON.stringify(data));
+
+            return {
+                id,
+                data: JSON.parse((await fs.readFile(directory, 'utf-8')).split("\n"))
+            };
         }
-
-    
-}
-
-exports.dbGetData = (id, collection, store = "./data/") => {
-
-    let directory = store+collection+"/"+id+".sol";
-
-    try {
-        let response = fs.readFileSync(directory, 'utf-8').split("\n")
-        let arrC = []
-        response.forEach(r =>{
-                arrC.push(JSON.parse(r))            
-        })
-        return arrC
     } catch (err) {
-        if (err.code === 'ENOENT') {
-            return [ {
-                code: err.code,
-                msj: "El directorio o archivo no existe",
-            } ]
-          } else {
-            return [ {
-                code: err,
-                msj: "ERRO EXEPTION",
-            } ]
-          }
+        return handleError(err);
     }
+};
 
-}
-
-exports.dbGetDateModify = (id, collection, store = "./data/") => {
-
-    let directory = store+collection+"/"+id+".sol";
-
-    try {
-        statsObj = fs.statSync(directory)
-        return statsObj.birthtime.toUTCString().replace(',', "").split(' ')
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            return [ {
-                code: err.code,
-                msj: "El directorio o archivo no existe",
-            } ]
-          } else {
-            return [ {
-                code: err,
-                msj: "ERRO EXEPTION",
-            } ]
-          }
+const handleError = (err) => {
+    if (err.code === 'ENOENT') {
+        return [{ code: err.code, msj: "El directorio o archivo no existe" }];
+    } else {
+        return [{ code: err, msj: "ERRO EXEPTION" }];
     }
+};
 
-}
-
-exports.dbGetLatestFile = (collection, store = "./data/") => {
-
-    let directory = store+collection+"/";
-
-    try {
-
-        let id = fs.readFileSync(directory+"/.indx", 'utf-8')
-
-        return id
-
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            return [ {
-                code: err.code,
-                msj: "El directorio o archivo no existe",
-            } ]
-          } else {
-            return [ {
-                code: err,
-                msj: "ERRO EXEPTION",
-            } ]
-          }
-    }
-
-}
-
-exports.dbDeleteData = (id, collection, store = "./data/") => {
-
-    let directory = store+collection+"/"+id+".sol";
-
-    try {
-
-        fs.unlinkSync(directory);
-        return 1
-
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            return [ {
-                code: err.code,
-                msj: "El directorio o archivo no existe",
-            } ]
-          } else {
-            return [ {
-                code: err,
-                msj: "ERRO EXEPTION",
-            } ]
-          }
-    }
-
-}
-
-exports.dbDeleteInsert = (matrixID, id, collection, store = "./data/") => {
-
-    let directory = store+collection+"/"+id+".sol";
-
-    try {
-
-        let response = fs.readFileSync(directory, 'utf-8').split("\n"),
-            finsert = true,
-            data
-
-            if (response[0] !== '') {
-
-                fs.truncateSync(directory, 0)
-
-                for( let i = 0; i < response.length; i++){ 
-                                   
-                    if ( i !== matrixID ) { 
-        
-                        if(finsert){
-                            data = JSON.stringify(  JSON.parse(response[i]) )
-                            finsert = false
-                        } else { 
-                            data = "\n"+JSON.stringify(  JSON.parse(response[i]) )
-                        }
-        
-                        fs.appendFileSync(directory, data);
-        
-                    } 
-                }
-
-                return {
-                    id: id,
-                    matrixID: matrixID,
-                    deleted: true,
-                    data:  JSON.parse(fs.readFileSync(directory, 'utf-8').split("\n"))
-
-                }
-
-            } else {
-                return {
-                    id: id,
-                    matrixID: matrixID,
-                    deleted: false
-                }
-            }
-
-    } catch (err) {
-        console.log("a",err)
-
-        if (err.code === 'ENOENT') {
-            return [ {
-                code: err.code,
-                msj: "El directorio o archivo no existe",
-            } ]
-          } else {
-            return [ {
-                code: err,
-                msj: "ERRO EXEPTION",
-            } ]
-          }
-    }
-
-}
-
-exports.dbFlushInsert = (data, id, collection, store = "./data/") => {
-
-    let directory = store+collection+"/"+id+".sol";
-
-    try {
-
-        let response = fs.readFileSync(directory, 'utf-8').split("\n")
-
-            if (response[0] !== '') {
-
-                fs.truncateSync(directory, 0)
-                fs.appendFileSync(directory, JSON.stringify( data ) );
-
-                return {
-                    id: id,
-                    data: JSON.parse( fs.readFileSync(directory, 'utf-8').split("\n"))
-                }
-
-            } 
-
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            return [ {
-                code: err.code,
-                msj: "El directorio o archivo no existe",
-            } ]
-          } else {
-            return [ {
-                code: err,
-                msj: "ERRO EXEPTION",
-            } ]
-          }
-    }
-
-}
+module.exports = {
+    dbCreateCollection,
+    dbInsert,
+    dbUpdate,
+    dbGetIndex,
+    dbGetData,
+    dbGetDateModify,
+    dbGetLatestFile,
+    dbDeleteData,
+    dbDeleteInsert,
+    dbFlushInsert
+};

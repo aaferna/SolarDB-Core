@@ -81,9 +81,22 @@ const dbGetData = async (id, collection, store = "./data/") => {
 
 const dbGetDateModify = async (id, collection, store = "./data/") => {
     const directory = `${store}${collection}/${id}.sol`;
+    const timestampFile = `${directory}/.timestamp`;
 
     try {
+        const [data, timestamp] = await Promise.all([
+            fs.readFile(directory, 'utf-8'),
+            fs.readFile(timestampFile, 'utf-8').catch(() => null)
+        ]);
+
         const statsObj = await fs.stat(directory);
+        const currentTimestamp = statsObj.mtime.getTime().toString();
+
+        if (timestamp !== currentTimestamp) {
+            // Update the timestamp file if the data has been modified
+            await fs.writeFile(timestampFile, currentTimestamp, 'utf8');
+        }
+
         return statsObj.birthtime.toUTCString().replace(',', "").split(' ');
     } catch (err) {
         return handleError(err);

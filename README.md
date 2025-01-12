@@ -26,7 +26,7 @@ npm install proper-lockfile
 
 
 
-## 2. Funciones Disponibles**
+## 2. Funciones Disponibles
 
 ### **2.1 Creación de Colección**
 **Función:** `dbCreateCollection(collection, store)`

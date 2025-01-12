@@ -19,7 +19,7 @@ Este sistema permite gestionar colecciones y datos almacenados en archivos local
 - Una carpeta base donde se almacenarán los datos (`./data/` por defecto).
 
 ### **Instalación de Dependencias**
-Ejecuta el siguiente comando para instalar el paquete necesario:
+Ejecuta el siguiente comando para instalar los paquetes necesarios:
 ```bash
 npm install proper-lockfile
 ```

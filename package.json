@@ -1,7 +1,7 @@
 {
   "name": "solardb-core",
-  "version": "4.0.0",
-  "description": "Base de datos no Relacional",
+  "version": "5.0.0",
+  "description": "Base de datos no relacional con soporte mejorado",
   "main": "main.js",
   "repository": {
     "type": "git",
@@ -14,14 +14,16 @@
   },
   "homepage": "https://github.com/gusgeek/SolarDB-Core#readme",
   "dependencies": {
-    "child_process": "^1.0.2",
-    "fs": "^0.0.1-security",
-    "underscore": "^1.13.1"
+    "proper-lockfile": "^4.1.1"
   },
   "devDependencies": {},
   "keywords": [
     "database",
     "db",
-    "nosql"
+    "nosql",
+    "non-relational",
+    "json",
+    "transactions",
+    "audit-logs"
   ]
 }

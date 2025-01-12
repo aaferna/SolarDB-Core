@@ -1,197 +1,183 @@
 const fs = require('fs').promises;
+const path = require('path');
+const lockfile = require('proper-lockfile');
 
-const dbCreateCollection = async (collection, store = "./data/") => {
-    const collectionPath = store + collection;
-
-    try {
-        await fs.mkdir(store);
-    } catch (err) {
-        if (err.code !== 'EEXIST') {
-            throw err;
-        }
+class DatabaseError extends Error {
+    constructor(message, code) {
+        super(message);
+        this.code = code;
     }
+}
+
+const logOperation = async (operation, details) => {
+    const logFile = './data/audit.log';
+    const logEntry = `${new Date().toISOString()} - ${operation}: ${JSON.stringify(details)}\n`;
+    await fs.appendFile(logFile, logEntry, 'utf8');
+};
+
+const ensureDirectory = async (dirPath) => {
+    try {
+        await fs.mkdir(dirPath, { recursive: true });
+    } catch (err) {
+        throw new DatabaseError(`Error ensuring directory: ${err.message}`, 'DIR_ERROR');
+    }
+};
+
+const incrementIndex = async (indexFile) => {
+    let release;
+    try {
+        release = await lockfile.lock(indexFile);
+        const currentIndex = parseInt(await fs.readFile(indexFile, 'utf8'), 10) || 0;
+        const newIndex = currentIndex + 1;
+        await fs.writeFile(indexFile, newIndex.toString(), 'utf8');
+        return newIndex;
+    } finally {
+        if (release) release();
+    }
+};
+
+const getIndex = async (collection, store = './data/') => {
+    const collectionPath = path.join(store, collection);
+    const indexFile = path.join(collectionPath, '.indx');
 
     try {
-        await fs.mkdir(collectionPath);
-        await fs.writeFile(collectionPath + "/.indx", "0", 'utf8');
-    } catch (err) {
-        if (err.code !== 'EEXIST') {
-            throw err;
+        const currentIndex = parseInt(await fs.readFile(indexFile, 'utf8'), 10);
+        return currentIndex;
+    } catch {
+        return 0;
+    }
+};
+
+const validateIndex = async (collection, store = './data/') => {
+    const collectionPath = path.join(store, collection);
+    const files = await fs.readdir(collectionPath);
+    const maxId = files
+        .filter(file => file.endsWith('.json'))
+        .map(file => parseInt(file.replace('.json', ''), 10))
+        .reduce((max, id) => Math.max(max, id), 0);
+
+    const indexFile = path.join(collectionPath, '.indx');
+    await fs.writeFile(indexFile, maxId.toString(), 'utf8');
+    return maxId;
+};
+
+const validateJson = (data) => {
+    if (typeof data !== 'object' || Array.isArray(data) || data === null) {
+        throw new DatabaseError('Invalid data format: Only JSON objects are allowed', 'VALIDATION_ERROR');
+    }
+};
+
+const transaction = async (operations) => {
+    const logs = [];
+    try {
+        for (const op of operations) {
+            logs.push(await op());
         }
+        return logs;
+    } catch (err) {
+        for (const log of logs.reverse()) {
+            // Implement rollback logic if needed
+        }
+        throw err;
+    }
+};
+
+const dbCreateCollection = async (collection, store = './data/') => {
+    const collectionPath = path.join(store, collection);
+
+    await ensureDirectory(collectionPath);
+
+    const indexFile = path.join(collectionPath, '.indx');
+    try {
+        await fs.access(indexFile);
+    } catch {
+        await fs.writeFile(indexFile, '0', 'utf8');
     }
 
     return collectionPath;
 };
 
-const dbInsert = async (dataInsert, collection, store = "./data/") => {
+const dbInsert = async (dataInsert, collection, store = './data/') => {
+    validateJson(dataInsert);
+
     const collectionPath = await dbCreateCollection(collection, store);
-    const id = parseInt(await fs.readFile(collectionPath + "/.indx", 'utf-8')) + 1;
-    const directory = `${collectionPath}/${id}.sol`;
+    const indexFile = path.join(collectionPath, '.indx');
 
-    await fs.writeFile(collectionPath + "/.indx", id.toString(), 'utf8');
+    const id = await incrementIndex(indexFile);
+    const filePath = path.join(collectionPath, `${id}.json`);
+
+    await fs.writeFile(filePath, JSON.stringify(dataInsert), 'utf8');
+    await logOperation('INSERT', { collection, id, filePath });
+
+    return { id, filePath };
+};
+
+const dbUpdate = async (dataInsert, id, collection, store = './data/') => {
+    validateJson(dataInsert);
+
+    const filePath = path.join(store, collection, `${id}.json`);
 
     try {
-        await fs.writeFile(directory, JSON.stringify(dataInsert), 'utf8');
-        return { id, directory };
+        await fs.access(filePath);
+
+        const currentData = JSON.parse(await fs.readFile(filePath, 'utf-8'));
+        const updatedData = Array.isArray(currentData) ? [...currentData, dataInsert] : [currentData, dataInsert];
+
+        await fs.writeFile(filePath, JSON.stringify(updatedData), 'utf8');
+        await logOperation('UPDATE', { collection, id, filePath });
+
+        return { id, filePath };
     } catch (err) {
-        return handleError(err);
+        throw new DatabaseError(`Error updating file: ${err.message}`, 'UPDATE_ERROR');
     }
 };
 
-const dbUpdate = async (dataInsert, id, collection, store = "./data/") => {
-    const directory = `${store}${collection}/${id}.sol`;
+const dbGetData = async (id, collection, store = './data/') => {
+    const filePath = path.join(store, collection, `${id}.json`);
 
     try {
-        await fs.access(directory, fs.F_OK);
-
-        try {
-            await fs.appendFile(directory, `\n${JSON.stringify(dataInsert)}`);
-            return { id, directory };
-        } catch (err) {
-            return handleError(err);
-        }
+        const data = await fs.readFile(filePath, 'utf-8');
+        await logOperation('GET_DATA', { collection, id, filePath });
+        return JSON.parse(data);
     } catch (err) {
-        return handleError(err);
+        throw new DatabaseError(`Error reading data: ${err.message}`, 'READ_ERROR');
     }
 };
 
-const dbGetIndex = async (collection = null, store = "./data/") => {
-    const directory = collection === null ? store : `${store}${collection}`;
+const dbDeleteData = async (id, collection, store = './data/') => {
+    const filePath = path.join(store, collection, `${id}.json`);
 
     try {
-        const response = await fs.readdir(directory);
-        const arrC = response.filter(r => r !== '.indx').map(r => r.replace(".sol", ""));
-        return arrC;
+        await fs.unlink(filePath);
+        await logOperation('DELETE', { collection, id, filePath });
+        return { id, deleted: true };
     } catch (err) {
-        return handleError(err);
+        throw new DatabaseError(`Error deleting data: ${err.message}`, 'DELETE_ERROR');
     }
 };
 
-const dbGetData = async (id, collection, store = "./data/") => {
-    const directory = `${store}${collection}/${id}.sol`;
+const dbGetIndex = async (collection, store = './data/') => {
+    const collectionPath = path.join(store, collection);
 
     try {
-        const response = (await fs.readFile(directory, 'utf-8')).split("\n");
-        const arrC = response.map(r => JSON.parse(r));
-        return arrC;
+        const files = await fs.readdir(collectionPath);
+        await logOperation('GET_INDEX', { collection });
+        return files.filter(file => file !== '.indx').map(file => path.basename(file, '.json'));
     } catch (err) {
-        return handleError(err);
+        throw new DatabaseError(`Error getting index: ${err.message}`, 'INDEX_ERROR');
     }
 };
 
-const dbGetDateModify = async (id, collection, store = "./data/") => {
-    const directory = `${store}${collection}/${id}.sol`;
-    const timestampFile = `${directory}/.timestamp`;
+const dbGetLatestId = async (collection, store = './data/') => {
+    const collectionPath = path.join(store, collection);
+    const indexFile = path.join(collectionPath, '.indx');
 
     try {
-        const [data, timestamp] = await Promise.all([
-            fs.readFile(directory, 'utf-8'),
-            fs.readFile(timestampFile, 'utf-8').catch(() => null)
-        ]);
-
-        const statsObj = await fs.stat(directory);
-        const currentTimestamp = statsObj.mtime.getTime().toString();
-
-        if (timestamp !== currentTimestamp) {
-            // Update the timestamp file if the data has been modified
-            await fs.writeFile(timestampFile, currentTimestamp, 'utf8');
-        }
-
-        return statsObj.birthtime.toUTCString().replace(',', "").split(' ');
+        const id = await fs.readFile(indexFile, 'utf-8');
+        await logOperation('GET_LATEST_ID', { collection, id });
+        return parseInt(id, 10);
     } catch (err) {
-        return handleError(err);
-    }
-};
-
-const dbGetLatestFile = async (collection, store = "./data/") => {
-    const directory = `${store}${collection}/`;
-
-    try {
-        const id = await fs.readFile(directory + "/.indx", 'utf-8');
-        return id;
-    } catch (err) {
-        return handleError(err);
-    }
-};
-
-const dbDeleteData = async (id, collection, store = "./data/") => {
-    const directory = `${store}${collection}/${id}.sol`;
-
-    try {
-        await fs.unlink(directory);
-        return 1;
-    } catch (err) {
-        return handleError(err);
-    }
-};
-
-const dbDeleteInsert = async (matrixID, id, collection, store = "./data/") => {
-    const directory = `${store}${collection}/${id}.sol`;
-
-    try {
-        const response = (await fs.readFile(directory, 'utf-8')).split("\n");
-        let finsert = true;
-        let data;
-
-        if (response[0] !== '') {
-            fs.truncateSync(directory, 0);
-
-            for (let i = 0; i < response.length; i++) {
-                if (i !== matrixID) {
-                    if (finsert) {
-                        data = JSON.stringify(JSON.parse(response[i]));
-                        finsert = false;
-                    } else {
-                        data = "\n" + JSON.stringify(JSON.parse(response[i]));
-                    }
-
-                    await fs.appendFile(directory, data);
-                }
-            }
-
-            return {
-                id,
-                matrixID,
-                deleted: true,
-                data: JSON.parse((await fs.readFile(directory, 'utf-8')).split("\n"))
-            };
-        } else {
-            return {
-                id,
-                matrixID,
-                deleted: false
-            };
-        }
-    } catch (err) {
-        return handleError(err);
-    }
-};
-
-const dbFlushInsert = async (data, id, collection, store = "./data/") => {
-    const directory = `${store}${collection}/${id}.sol`;
-
-    try {
-        const response = (await fs.readFile(directory, 'utf-8')).split("\n");
-
-        if (response[0] !== '') {
-            fs.truncateSync(directory, 0);
-            await fs.appendFile(directory, JSON.stringify(data));
-
-            return {
-                id,
-                data: JSON.parse((await fs.readFile(directory, 'utf-8')).split("\n"))
-            };
-        }
-    } catch (err) {
-        return handleError(err);
-    }
-};
-
-const handleError = (err) => {
-    if (err.code === 'ENOENT') {
-        return [{ code: err.code, msj: "El directorio o archivo no existe" }];
-    } else {
-        return [{ code: err, msj: "ERRO EXEPTION" }];
+        throw new DatabaseError(`Error getting latest ID: ${err.message}`, 'LATEST_ID_ERROR');
     }
 };
 
@@ -199,11 +185,11 @@ module.exports = {
     dbCreateCollection,
     dbInsert,
     dbUpdate,
-    dbGetIndex,
     dbGetData,
-    dbGetDateModify,
-    dbGetLatestFile,
     dbDeleteData,
-    dbDeleteInsert,
-    dbFlushInsert
+    dbGetIndex,
+    dbGetLatestId,
+    getIndex,
+    validateIndex,
+    transaction
 };
